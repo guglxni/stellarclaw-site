@@ -6,20 +6,17 @@
   <title>StellarClaw — Send money like a text.</title>
   <meta name="description" content="StellarClaw is an AI payments agent in WhatsApp and Telegram. Chat to send USDC anywhere on Stellar. Settles in 5 seconds for less than a cent.">
   <link rel="stylesheet" href="colors_and_type.css">
-  <!-- Formbricks website survey SDK -->
-  <script type="text/javascript">
-    !function(){
-      var s=document.createElement("script");
-      s.type="text/javascript";s.async=true;
-      s.src="https://unpkg.com/@formbricks/js@^2.0.0/dist/index.umd.js";
-      s.onload=function(){
-        window.formbricks&&window.formbricks.init({
-          environmentId:"cmoc1ekddaoi5ue01055npjcf",
-          apiHost:"https://app.formbricks.com"
-        });
-      };
-      document.head.appendChild(s);
-    }();
+  <!-- Formbricks SDK — loaded as ES module, exposed globally -->
+  <script type="module">
+    try {
+      const { default: formbricks } = await import('https://esm.sh/@formbricks/js');
+      await formbricks.init({
+        environmentId: "cmoc1ekddaoi5ue01055npjcf",
+        apiHost: "https://app.formbricks.com"
+      });
+      window.formbricks = formbricks;
+      window.dispatchEvent(new Event('formbricks-ready'));
+    } catch(e) { console.warn('Formbricks SDK failed to load', e); }
   </script>
   <style>
     /* ── reset ─────────────────────────────────────── */
@@ -344,6 +341,32 @@
     .banner-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
     .banner-sub { font-family: var(--font-accent); font-style: italic; font-size: 19px; color: var(--fg-2); max-width: 380px; line-height: 1.5; }
     .banner-ctas { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+
+    /* ── waitlist form ───────────────────────────────── */
+    .waitlist-form { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 420px; }
+    .wl-fields { display: flex; flex-direction: column; gap: 10px; }
+    .wl-field { display: flex; flex-direction: column; gap: 6px; }
+    .wl-field label {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.20em;
+      text-transform: uppercase; color: var(--fg-3);
+    }
+    .wl-field label .req { color: var(--sc-yellow); }
+    .wl-field label .opt { color: var(--fg-muted); letter-spacing: 0; font-size: 9px; text-transform: none; }
+    .wl-field input {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px; padding: 14px 16px;
+      font-family: var(--font-ui); font-size: 15px; color: var(--sc-bone);
+      outline: none; transition: border-color 120ms, background 120ms; width: 100%;
+    }
+    .wl-field input::placeholder { color: var(--fg-muted); }
+    .wl-field input:focus { border-color: var(--sc-yellow); background: rgba(253,218,36,0.04); }
+    .wl-field input:disabled { opacity: 0.45; cursor: not-allowed; }
+    .wl-success {
+      display: none; padding: 14px 16px;
+      background: rgba(0,201,176,0.08); border: 1px solid rgba(0,201,176,0.22); border-radius: 10px;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--sc-mint);
+    }
 
     /* ── footer ──────────────────────────────────────── */
     .foot { padding: 80px 0 52px; border-top: 1px solid rgba(255,255,255,0.10); }
@@ -700,14 +723,38 @@
       <h3 id="banner-h3">Join the waitlist.<br/><span class="y">Be first in line.</span></h3>
       <div class="banner-row">
         <p class="banner-sub">We will ping you the moment your corridor goes live. No wallet needed.</p>
-        <div class="banner-ctas">
+
+        <form class="waitlist-form" id="wl-form" novalidate>
+          <div class="wl-fields">
+            <div class="wl-field">
+              <label for="wl-email">
+                Email address <span class="req">*</span>
+              </label>
+              <input
+                type="email" id="wl-email" name="email"
+                required placeholder="you@example.com" autocomplete="email"
+              >
+            </div>
+            <div class="wl-field">
+              <label for="wl-phone">
+                Mobile number <span class="opt">(optional)</span>
+              </label>
+              <input
+                type="tel" id="wl-phone" name="phone"
+                placeholder="+1 555 000 0000" autocomplete="tel"
+              >
+            </div>
+          </div>
           <button
+            type="submit" id="wl-submit"
             class="btn-yellow"
-            style="font-size:15px;padding:15px 32px"
-            id="wl-cta-btn"
-            aria-label="Join the StellarClaw waitlist"
+            style="font-size:15px;padding:15px 32px;align-self:flex-start"
           >Secure my spot →</button>
-        </div>
+          <p class="wl-success" id="wl-success" role="status">
+            ✓ You're on the list — we'll be in touch.
+          </p>
+        </form>
+
       </div>
     </div>
   </section>
@@ -774,15 +821,47 @@
       });
     });
 
-    // Waitlist CTA — fires Formbricks "Join Waitlist" action
-    // The "StellarClaw Waitlist" survey must be configured in Formbricks
-    // to trigger on this action (Configuration → Add action → "Join Waitlist")
-    var wlBtn = document.getElementById('wl-cta-btn');
-    if (wlBtn) {
-      wlBtn.addEventListener('click', function() {
-        if (window.formbricks) {
-          window.formbricks.track('Join Waitlist');
+    // Waitlist form — submits contact data to Formbricks then shows inline success
+    var wlForm = document.getElementById('wl-form');
+    if (wlForm) {
+      wlForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var emailEl = document.getElementById('wl-email');
+        var phoneEl = document.getElementById('wl-phone');
+        var submitBtn = document.getElementById('wl-submit');
+        var successEl = document.getElementById('wl-success');
+
+        var email = emailEl.value.trim();
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          emailEl.focus();
+          emailEl.style.borderColor = '#FF6B6B';
+          return;
         }
+        emailEl.style.borderColor = '';
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+
+        try {
+          // Wait for SDK if still loading, max 4s
+          if (!window.formbricks) {
+            await new Promise(function(resolve) {
+              window.addEventListener('formbricks-ready', resolve, { once: true });
+              setTimeout(resolve, 4000);
+            });
+          }
+          if (window.formbricks) {
+            var phone = phoneEl.value.trim();
+            await window.formbricks.setEmail(email);
+            if (phone) await window.formbricks.setAttribute('phone', phone);
+            await window.formbricks.track('waitlist_signup');
+          }
+        } catch(err) { console.warn('Formbricks:', err); }
+
+        // Show success regardless — don't block UX on SDK errors
+        wlForm.querySelectorAll('input').forEach(function(i) { i.disabled = true; });
+        submitBtn.style.display = 'none';
+        successEl.style.display = 'block';
       });
     }
   </script>
