@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 80" width="520" height="80" role="img" aria-label="StellarClaw wordmark">
+  <defs>
+    
+  </defs>
+  <rect width="520" height="80" fill="#0A0A0A"></rect>
+  <text class="wordmark" x="20" y="62">
+    <tspan fill="#FDDA24">Stellar</tspan><tspan fill="#F6F7F8">Claw</tspan>
+  </text>
+</svg>

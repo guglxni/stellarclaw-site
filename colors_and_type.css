@@ -1,0 +1,265 @@
+/* ============================================================
+   StellarClaw — Core Tokens
+   Dark-first. All surfaces ship dark mode only.
+   ============================================================ */
+
+/* ---------- Fonts ---------- */
+@font-face { font-family: "Blackout"; src: url("fonts/Blackout-Midnight.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Blackout 2am"; src: url("fonts/Blackout-2am.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Advent Pro"; src: url("fonts/AdventPro-Light.ttf") format("truetype"); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Advent Pro"; src: url("fonts/AdventPro-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Advent Pro"; src: url("fonts/AdventPro-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Advent Pro"; src: url("fonts/AdventPro-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Advent Pro"; src: url("fonts/AdventPro-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/IBMPlexMono-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/IBMPlexMono-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "IBM Plex Mono"; src: url("fonts/IBMPlexMono-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+
+@font-face { font-family: "Texturina"; src: url("fonts/Texturina-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Texturina"; src: url("fonts/Texturina-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Texturina"; src: url("fonts/Texturina-MediumItalic.ttf") format("truetype"); font-weight: 500; font-style: italic; font-display: swap; }
+
+:root {
+  /* ---------- Type families ---------- */
+  --font-display: "Blackout", "Impact", "Arial Black", sans-serif;
+  --font-ui:      "Advent Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --font-accent:  "Texturina", Georgia, serif;
+
+  /* ---------- Brand palette ---------- */
+  /* Primary from wordmark */
+  --sc-yellow:          #FDDA24;   /* "Stellar" — signal yellow */
+  --sc-yellow-hot:      #FFE74A;   /* hover / raised state */
+  --sc-yellow-dim:      #C9A700;   /* pressed / secondary */
+  --sc-bone:            #F6F7F8;   /* "Claw" — near-white */
+
+  /* Obsidian scale — the robot body, plates and backdrop */
+  --sc-black:           #0A0A0B;   /* deepest — page base */
+  --sc-obsidian-900:    #111114;   /* app surface */
+  --sc-obsidian-800:    #17181C;   /* raised surface */
+  --sc-obsidian-700:    #1E2026;   /* card */
+  --sc-obsidian-600:    #2A2D35;   /* card raised / input */
+  --sc-obsidian-500:    #3A3E48;   /* border hi-contrast */
+  --sc-obsidian-400:    #4E5260;   /* subtle border */
+  --sc-obsidian-300:    #6B6F7C;   /* muted text */
+  --sc-obsidian-200:    #9097A4;   /* secondary text */
+  --sc-obsidian-100:    #C3C7D1;   /* primary muted */
+
+  /* Accents from the mascot sheet */
+  --sc-mint:            #00C9B0;   /* robot-chest glow / live / success */
+  --sc-mint-dim:        #1A8A7D;
+  --sc-lavender-streak: #B8A4FF;   /* motion-streak, rare accent */
+  --sc-red:             #FF5A5F;   /* destructive, error */
+  --sc-amber:           #FFB020;   /* warning, pending */
+
+  /* Semantic — background */
+  --bg-page:        var(--sc-black);
+  --bg-surface:     var(--sc-obsidian-900);
+  --bg-raised:      var(--sc-obsidian-800);
+  --bg-card:        var(--sc-obsidian-700);
+  --bg-input:       var(--sc-obsidian-600);
+  --bg-hover:       #20232A;
+  --bg-accent:      var(--sc-yellow);
+  --bg-accent-hot:  var(--sc-yellow-hot);
+
+  /* Semantic — foreground */
+  --fg-1:      var(--sc-bone);           /* primary text */
+  --fg-2:      var(--sc-obsidian-100);   /* secondary */
+  --fg-3:      var(--sc-obsidian-200);   /* tertiary / captions */
+  --fg-muted:  var(--sc-obsidian-300);   /* disabled / very quiet */
+  --fg-accent: var(--sc-yellow);
+  --fg-link:   var(--sc-yellow);
+  --fg-on-accent: var(--sc-black);       /* text on yellow */
+
+  /* Semantic — state */
+  --status-live:    var(--sc-mint);
+  --status-success: var(--sc-mint);
+  --status-warn:    var(--sc-amber);
+  --status-error:   var(--sc-red);
+
+  /* ---------- Borders ---------- */
+  --border-subtle:    1px solid rgba(255,255,255,0.06);
+  --border-default:   1px solid rgba(255,255,255,0.10);
+  --border-strong:    1px solid rgba(255,255,255,0.18);
+  --border-accent:    1px solid var(--sc-yellow);
+  --border-panel:     1px solid var(--sc-obsidian-500);
+
+  /* ---------- Radii ---------- */
+  /* Bias toward slightly rounded rectangles — industrial feel, not pill-first */
+  --r-xs:  2px;
+  --r-sm:  4px;
+  --r-md:  8px;
+  --r-lg:  12px;
+  --r-xl:  18px;
+  --r-2xl: 24px;
+  --r-pill: 999px;
+
+  /* ---------- Shadows ---------- */
+  /* No soft drop shadows on dark surfaces — use borders + subtle glow */
+  --shadow-sm:   0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md:   0 2px 0 rgba(255,255,255,0.04) inset, 0 8px 24px rgba(0,0,0,0.55);
+  --shadow-lg:   0 2px 0 rgba(255,255,255,0.06) inset, 0 18px 48px rgba(0,0,0,0.7);
+  --shadow-glow-yellow: 0 0 0 1px rgba(253,218,36,0.35), 0 10px 30px rgba(253,218,36,0.18);
+  --shadow-glow-mint:   0 0 0 1px rgba(0,201,176,0.35), 0 10px 30px rgba(0,201,176,0.18);
+  --shadow-inset-well:  inset 0 1px 0 rgba(0,0,0,0.5), inset 0 -1px 0 rgba(255,255,255,0.04);
+
+  /* ---------- Spacing (4px base) ---------- */
+  --s-0: 0;
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-20: 80px;
+  --s-24: 96px;
+
+  /* ---------- Motion ---------- */
+  --ease-out:    cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast:    120ms;
+  --dur-base:    200ms;
+  --dur-slow:    360ms;
+
+  /* ---------- Type scale ---------- */
+  --fs-hero:    clamp(56px, 9vw, 96px);
+  --fs-h1:      clamp(40px, 6vw, 72px);
+  --fs-h2:      clamp(32px, 4.5vw, 56px);
+  --fs-h3:      28px;
+  --fs-h4:      22px;
+  --fs-body:    17px;
+  --fs-body-sm: 15px;
+  --fs-caption: 13px;
+  --fs-micro:   11px;
+  --fs-mono:    14px;
+  --fs-accent:  20px;
+
+  --lh-tight:   1.02;
+  --lh-snug:    1.18;
+  --lh-normal:  1.45;
+  --lh-loose:   1.62;
+}
+
+/* ============================================================
+   Base element styles — apply on body to opt in globally
+   ============================================================ */
+.sc-base,
+body.sc-base {
+  background: var(--bg-page);
+  color: var(--fg-1);
+  font-family: var(--font-ui);
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  font-feature-settings: "ss01" on, "ss02" on;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---------- Semantic typographic primitives ---------- */
+.sc-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-hero);
+  line-height: var(--lh-tight);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--fg-1);
+}
+.sc-h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--fg-1);
+  margin: 0;
+}
+.sc-h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--fg-1);
+  margin: 0;
+}
+.sc-h3 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  letter-spacing: -0.005em;
+  color: var(--fg-1);
+  margin: 0;
+}
+.sc-h4 {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: var(--fs-h4);
+  line-height: var(--lh-snug);
+  color: var(--fg-1);
+  margin: 0;
+}
+.sc-body {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: var(--lh-normal);
+  color: var(--fg-2);
+}
+.sc-caption {
+  font-family: var(--font-ui);
+  font-weight: 500;
+  font-size: var(--fs-caption);
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.sc-eyebrow {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  font-size: var(--fs-caption);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sc-yellow);
+}
+.sc-mono, .sc-code, code, kbd {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  color: var(--fg-1);
+  font-feature-settings: "zero" on, "ss02" on;
+}
+.sc-quote {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-size: var(--fs-accent);
+  line-height: 1.5;
+  color: var(--fg-1);
+}
+.sc-link {
+  color: var(--fg-link);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.sc-link:hover { color: var(--sc-yellow-hot); }
+
+/* ---------- Wordmark ---------- */
+.sc-wordmark {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+  line-height: 1;
+  display: inline-flex;
+  text-transform: uppercase;
+}
+.sc-wordmark .sc-wordmark__stellar { color: var(--sc-yellow); }
+.sc-wordmark .sc-wordmark__claw    { color: var(--sc-bone); }

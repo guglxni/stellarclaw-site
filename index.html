@@ -1,0 +1,790 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>StellarClaw — Send money like a text.</title>
+  <meta name="description" content="StellarClaw is an AI payments agent in WhatsApp and Telegram. Chat to send USDC anywhere on Stellar. Settles in 5 seconds for less than a cent.">
+  <link rel="stylesheet" href="colors_and_type.css">
+  <!-- Formbricks website survey SDK -->
+  <script type="text/javascript">
+    !function(){
+      var s=document.createElement("script");
+      s.type="text/javascript";s.async=true;
+      s.src="https://unpkg.com/@formbricks/js@^2.0.0/dist/index.umd.js";
+      s.onload=function(){
+        window.formbricks&&window.formbricks.init({
+          environmentId:"cmoc1ekddaoi5ue01055npjcf",
+          apiHost:"https://app.formbricks.com"
+        });
+      };
+      document.head.appendChild(s);
+    }();
+  </script>
+  <style>
+    /* ── reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #0A0A0B; color: #F6F7F8; font-family: var(--font-ui); -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: #FDDA24; color: #0A0A0B; }
+    p { margin: 0; }
+    ul { list-style: none; padding: 0; margin: 0; }
+
+    /* ── layout ────────────────────────────────────── */
+    .shell { max-width: 1440px; margin: 0 auto; padding: 0 80px; }
+    @media (max-width: 900px) { .shell { padding: 0 24px; } }
+
+    /* ── masthead ───────────────────────────────────── */
+    .mast {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; padding: 16px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-3);
+    }
+    .mast .centre { justify-self: center; font-family: var(--font-display); font-size: 14px; letter-spacing: 0.04em; color: var(--fg-1); }
+    .mast .centre em { font-style: normal; color: var(--sc-yellow); }
+    .mast .right { justify-self: end; }
+    .live-dot {
+      display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--sc-mint); box-shadow: 0 0 0 3px rgba(0,201,176,0.18);
+      margin-right: 7px; vertical-align: 2px;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* ── nav ────────────────────────────────────────── */
+    .nav {
+      position: sticky; top: 0; z-index: 30;
+      background: rgba(10,10,11,0.90); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-name { font-family: var(--font-display); font-size: 20px; letter-spacing: 0.025em; line-height: 1; text-transform: uppercase; }
+    .brand-name .y { color: var(--sc-yellow); }
+    .brand-name .w { color: var(--sc-bone); }
+    .nav-links { display: flex; gap: 36px; font-size: 14px; font-weight: 500; color: var(--fg-2); }
+    .nav-links a { transition: color 120ms; }
+    .nav-links a:hover { color: var(--sc-yellow); }
+    @media (max-width: 800px) { .nav-links { display: none; } }
+
+    /* ── buttons ────────────────────────────────────── */
+    .btn-yellow {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 22px; border-radius: 10px;
+      background: var(--sc-yellow); color: #0A0A0B;
+      font-family: var(--font-ui); font-weight: 700; font-size: 14px;
+      border: none; cursor: pointer;
+      transition: background 120ms var(--ease-out), transform 120ms var(--ease-out);
+    }
+    .btn-yellow:hover { background: var(--sc-yellow-hot); transform: translateY(-1px); }
+    .btn-yellow:active { background: var(--sc-yellow-dim); transform: none; }
+    .btn-yellow:focus-visible { outline: 2px solid var(--sc-yellow); outline-offset: 2px; }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 20px; border-radius: 10px;
+      background: transparent; color: var(--sc-bone);
+      border: 1px solid rgba(255,255,255,0.14);
+      font-family: var(--font-ui); font-weight: 600; font-size: 14px;
+      transition: background 120ms, border-color 120ms;
+    }
+    .btn-ghost:hover { background: #17181C; border-color: rgba(255,255,255,0.25); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--sc-yellow); outline-offset: 2px; }
+
+    /* coming-soon wrapper */
+    .cta-wrap { display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+    .soon-tag {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--fg-muted);
+    }
+
+    /* ── hero ───────────────────────────────────────── */
+    .hero { position: relative; padding: 88px 0 64px; overflow: hidden; }
+    .hero-hex {
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.045;
+      background-image:
+        linear-gradient(60deg, transparent 24%, rgba(255,255,255,1) 24.5%, rgba(255,255,255,1) 25%, transparent 25.5%,
+          transparent 75%, rgba(255,255,255,1) 75.5%, rgba(255,255,255,1) 76%, transparent 76.5%),
+        linear-gradient(-60deg, transparent 24%, rgba(255,255,255,1) 24.5%, rgba(255,255,255,1) 25%, transparent 25.5%,
+          transparent 75%, rgba(255,255,255,1) 75.5%, rgba(255,255,255,1) 76%, transparent 76.5%);
+      background-size: 40px 70px;
+      -webkit-mask-image: linear-gradient(180deg, black 0%, black 40%, transparent 88%);
+      mask-image: linear-gradient(180deg, black 0%, black 40%, transparent 88%);
+    }
+
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center;
+      position: relative;
+    }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase;
+      color: var(--sc-yellow); margin-bottom: 24px;
+    }
+    .kicker .bar { width: 24px; height: 1px; background: var(--sc-yellow); flex-shrink: 0; }
+
+    .hero h1 {
+      font-family: var(--font-display); font-weight: 400;
+      font-size: clamp(60px, 8.5vw, 140px); line-height: 0.9; margin: 0;
+      letter-spacing: 0.005em; text-transform: uppercase; color: var(--sc-bone);
+    }
+    .hero h1 .y { color: var(--sc-yellow); }
+
+    .hero .lede {
+      font-family: var(--font-accent); font-style: italic;
+      font-size: clamp(17px, 1.6vw, 22px); line-height: 1.5; color: var(--fg-2);
+      max-width: 520px; margin-top: 28px;
+    }
+
+    .hero-ctas {
+      display: flex; gap: 14px; align-items: flex-start; margin-top: 40px; flex-wrap: wrap;
+    }
+    .hero-caveat {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--fg-muted);
+      align-self: center; margin-left: 4px;
+    }
+
+    /* mascot column */
+    .mascot-col {
+      position: relative; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .mascot-orbits {
+      position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+    }
+    .mascot-img {
+      width: 90%; max-width: 440px; position: relative; z-index: 1;
+      /* drop-shadow blends the mascot naturally into the dark background */
+      filter: drop-shadow(0 32px 64px rgba(0,0,0,0.55));
+    }
+
+    /* live stats below mascot */
+    .mascot-stats {
+      display: flex; gap: 0; margin-top: 24px; position: relative; z-index: 1;
+      border: 1px solid rgba(255,255,255,0.10); border-radius: 10px; overflow: hidden;
+      font-family: var(--font-mono); font-size: 12px;
+    }
+    .mstat {
+      padding: 12px 20px; display: flex; flex-direction: column; gap: 4px;
+      border-right: 1px solid rgba(255,255,255,0.08); background: rgba(15,16,19,0.80);
+    }
+    .mstat:last-child { border-right: none; }
+    .mstat .label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
+    .mstat .value { color: var(--sc-bone); font-weight: 500; letter-spacing: 0.04em; }
+    .mstat .value.green { color: var(--sc-mint); }
+    .mstat .value.yellow { color: var(--sc-yellow); }
+
+    /* stat strip */
+    .stat-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      margin-top: 72px;
+      border-top: 1px solid rgba(255,255,255,0.10);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    @media (max-width: 700px) { .stat-strip { grid-template-columns: repeat(2,1fr); } }
+    .stat-cell { padding: 28px 0 24px; border-right: 1px solid rgba(255,255,255,0.06); padding-right: 24px; }
+    .stat-cell + .stat-cell { padding-left: 24px; }
+    .stat-cell:last-child { border-right: none; }
+    .stat-cell .n { font-family: var(--font-mono); font-weight: 500; font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.02em; color: var(--sc-bone); line-height: 1; }
+    .stat-cell .n .y { color: var(--sc-yellow); }
+    .stat-cell .l { font-family: var(--font-ui); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--fg-3); margin-top: 10px; }
+
+    /* ── ticker strip ────────────────────────────────── */
+    .ticker-strip {
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      overflow: hidden; padding: 15px 0; background: #0C0D10;
+    }
+    .ticker-track {
+      display: flex; gap: 56px; white-space: nowrap;
+      animation: scroll-left 52s linear infinite;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--fg-3);
+    }
+    .ticker-track b { color: var(--sc-bone); font-weight: 500; }
+    .ticker-track .mint { color: var(--sc-mint); }
+    .ticker-track .yellow { color: var(--sc-yellow); }
+    @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── section layout ──────────────────────────────── */
+    .section { padding: 112px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+
+    .section-head {
+      display: grid; grid-template-columns: 68px 1fr; gap: 0 28px;
+      align-items: end; padding-bottom: 48px;
+      border-bottom: 1px solid rgba(255,255,255,0.14); margin-bottom: 64px;
+    }
+    @media (max-width: 700px) { .section-head { grid-template-columns: 1fr; gap: 12px; } }
+    .section-head .no {
+      font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.20em;
+      color: var(--sc-yellow); padding-bottom: 12px; align-self: end;
+    }
+    .section-head .head-body { display: flex; flex-direction: column; gap: 16px; }
+    .section-head h2 {
+      font-family: var(--font-display); font-weight: 400; text-transform: uppercase;
+      font-size: clamp(36px, 5vw, 76px); line-height: 0.94; margin: 0;
+      color: var(--sc-bone); letter-spacing: 0.005em;
+    }
+    .section-head h2 .dim { color: var(--fg-3); }
+    .section-head h2 .y { color: var(--sc-yellow); }
+    .section-head .sub {
+      font-family: var(--font-accent); font-style: italic;
+      font-size: clamp(15px, 1.4vw, 18px); color: var(--fg-2); line-height: 1.5;
+      max-width: 560px;
+    }
+
+    /* ── how it works ────────────────────────────────── */
+    .how-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1px; background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.07); border-radius: 2px;
+    }
+    @media (max-width: 720px) { .how-grid { grid-template-columns: 1fr; } }
+
+    .how-col { padding: 44px 36px; background: #0A0A0B; display: flex; flex-direction: column; gap: 18px; min-height: 360px; }
+    .how-col .step-n { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.20em; color: var(--sc-yellow); }
+    .how-col .step-t { font-family: var(--font-ui); font-weight: 600; font-size: 22px; line-height: 1.2; color: var(--sc-bone); }
+    .how-col .step-d { font-family: var(--font-ui); font-size: 15px; line-height: 1.6; color: var(--fg-2); }
+    .how-col .chat { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+
+    /* chat bubbles */
+    .bub { border-radius: 14px; padding: 11px 15px; font-size: 14px; line-height: 1.4; max-width: 94%; }
+    .bub.u { background: #2A2D35; color: var(--sc-bone); align-self: flex-end; border-bottom-right-radius: 4px; }
+    .bub.b { background: #1E2026; color: var(--sc-bone); align-self: flex-start; border: 1px solid rgba(255,255,255,0.06); border-bottom-left-radius: 4px; }
+    .bub .amt { font-family: var(--font-mono); color: var(--sc-yellow); }
+    .bub .meta { display: block; margin-top: 5px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--fg-3); }
+
+    /* ── protocol stack ──────────────────────────────── */
+    .stack { border: 1px solid rgba(255,255,255,0.10); border-radius: 12px; overflow: hidden; }
+
+    .layer {
+      display: grid;
+      grid-template-columns: 80px 240px 1fr 180px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      background: #0D0E11;
+      transition: background 200ms var(--ease-out);
+    }
+    .layer:first-child { border-top: none; }
+    .layer:hover { background: #13151B; }
+    @media (max-width: 960px) {
+      .layer { grid-template-columns: 72px 1fr; }
+      .layer .ld, .layer .ltag { grid-column: 2; border-right: none !important; }
+    }
+
+    .layer .lnum {
+      padding: 0 0 0 24px; display: flex; align-items: center; gap: 10px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      font-family: var(--font-mono); font-size: 18px; letter-spacing: 0.08em; color: var(--sc-yellow);
+    }
+    .layer .lnum .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--sc-yellow); box-shadow: 0 0 0 3px rgba(253,218,36,0.14); flex-shrink: 0; }
+    .layer .ltt {
+      padding: 28px 24px 28px 28px; border-right: 1px solid rgba(255,255,255,0.07);
+      display: flex; flex-direction: column; justify-content: center; gap: 6px;
+    }
+    .layer .ltt .title { font-family: var(--font-ui); font-weight: 600; font-size: 19px; color: var(--sc-bone); line-height: 1.2; }
+    .layer .ltt .sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3); }
+    .layer .ld {
+      padding: 28px 28px;
+      border-right: 1px solid rgba(255,255,255,0.07);
+      font-family: var(--font-ui); font-size: 15px; line-height: 1.6; color: var(--fg-2);
+      /* IMPORTANT: do NOT use display:flex here — text nodes become flex items */
+      display: block;
+    }
+    .layer .ld strong { color: var(--sc-bone); font-weight: 600; }
+    .layer .ltag {
+      padding: 28px 20px; display: flex; align-items: center; justify-content: flex-end;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3);
+    }
+    .chip { padding: 4px 11px; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; color: var(--sc-bone); white-space: nowrap; font-size: 10px; }
+
+    /* ── compare table ───────────────────────────────── */
+    .cmp { border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; overflow: hidden; }
+    .cmp-head {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 15px 28px; background: #13151A;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--fg-3);
+    }
+    .cmp-row {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 22px 28px; border-top: 1px solid rgba(255,255,255,0.06);
+      align-items: center;
+    }
+    .cmp-row.us { background: rgba(253,218,36,0.05); }
+    .cmp-row .name { font-family: var(--font-ui); font-weight: 500; font-size: 16px; color: var(--sc-bone); }
+    .cmp-row.us .name { color: var(--sc-yellow); font-weight: 700; }
+    .cmp-row .cell { font-family: var(--font-mono); font-size: 14px; color: var(--fg-2); }
+    .cmp-row.us .cell { color: var(--sc-bone); }
+    .src-note { margin-top: 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-muted); }
+    @media (max-width: 720px) {
+      .cmp-head, .cmp-row { grid-template-columns: 1.4fr 1fr 1fr; }
+      .cmp-head div:last-child, .cmp-row div:last-child { display: none; }
+    }
+
+    /* ── CTA banner ──────────────────────────────────── */
+    .banner {
+      padding: 112px 0; position: relative; overflow: hidden;
+      border-top: 1px solid rgba(255,255,255,0.14);
+      border-bottom: 1px solid rgba(255,255,255,0.14);
+      background:
+        radial-gradient(1200px 350px at 10% 50%, rgba(253,218,36,0.07), transparent 65%),
+        #0A0A0B;
+    }
+    .banner h3 {
+      font-family: var(--font-display); text-transform: uppercase;
+      font-size: clamp(40px, 5.5vw, 88px); line-height: 0.93; margin: 0;
+      color: var(--sc-bone); letter-spacing: 0.005em;
+    }
+    .banner h3 .y { color: var(--sc-yellow); }
+    .banner-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 40px; margin-top: 36px; flex-wrap: wrap; }
+    .banner-sub { font-family: var(--font-accent); font-style: italic; font-size: 19px; color: var(--fg-2); max-width: 380px; line-height: 1.5; }
+    .banner-ctas { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
+
+    /* ── footer ──────────────────────────────────────── */
+    .foot { padding: 80px 0 52px; border-top: 1px solid rgba(255,255,255,0.10); }
+    .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 48px; }
+    @media (max-width: 720px) { .foot-grid { grid-template-columns: 1fr 1fr; } }
+
+    .foot-col h4 { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--sc-yellow); margin: 0 0 16px; }
+    .foot-col ul { display: flex; flex-direction: column; gap: 10px; }
+    .foot-col ul li { font-family: var(--font-ui); font-size: 14px; color: var(--fg-2); }
+    .foot-col ul li a:hover { color: var(--sc-bone); }
+
+    .foot-brand { display: flex; align-items: center; gap: 10px; }
+    .foot-name { font-family: var(--font-display); font-size: 18px; text-transform: uppercase; letter-spacing: 0.02em; }
+    .foot-name .y { color: var(--sc-yellow); }
+    .foot-blurb { font-family: var(--font-ui); font-size: 13px; color: var(--fg-3); max-width: 270px; line-height: 1.65; margin-top: 16px; }
+
+    .foot-bottom {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 32px; margin-top: 44px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--fg-muted);
+    }
+  </style>
+</head>
+<body class="sc-base">
+
+  <!-- ── MASTHEAD ───────────────────────────────────── -->
+  <div class="shell">
+    <div class="mast">
+      <div><span class="live-dot"></span>Testnet live · Launch coming soon</div>
+      <div class="centre">STELLAR<em>CLAW</em> · THE DISPATCH</div>
+      <div class="right">EN · ES · PT</div>
+    </div>
+  </div>
+
+  <!-- ── NAV ───────────────────────────────────────── -->
+  <nav class="nav" aria-label="Main navigation">
+    <div class="shell nav-inner">
+      <a href="/" class="brand" aria-label="StellarClaw">
+        <img src="assets/logo-mark.png" alt="" aria-hidden="true" width="32" height="30" style="display:block;flex-shrink:0;object-fit:contain">
+        <div class="brand-name"><span class="y">Stellar</span><span class="w">Claw</span></div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#stack">Protocol stack</a></li>
+        <li><a href="#compare">Compare</a></li>
+        <li><a href="#waitlist">Waitlist</a></li>
+      </ul>
+
+      <a href="#waitlist" class="btn-yellow">Join waitlist →</a>
+    </div>
+  </nav>
+
+  <!-- ── HERO ──────────────────────────────────────── -->
+  <section class="hero" aria-labelledby="hero-h1">
+    <div class="hero-hex" aria-hidden="true"></div>
+    <div class="shell">
+      <div class="hero-grid">
+
+        <!-- copy -->
+        <div>
+          <div class="kicker" aria-hidden="true">
+            <span class="bar"></span>01 · The claw is out
+          </div>
+          <h1 id="hero-h1">
+            Send money<br/>
+            <span class="y">like a text</span><span style="color:#F6F7F8">.</span>
+          </h1>
+          <p class="lede">
+            StellarClaw is an AI payments agent that lives inside WhatsApp and Telegram.
+            Chat in plain language to send, swap, and schedule money on Stellar.
+            No app to download. No seed phrase ceremony.
+          </p>
+          <div class="hero-ctas">
+            <div class="cta-wrap">
+              <a href="javascript:void(0)" class="btn-yellow" style="font-size:15px; padding:14px 26px">Open in Telegram →</a>
+              <span class="soon-tag">Coming soon</span>
+            </div>
+            <div class="cta-wrap">
+              <a href="javascript:void(0)" class="btn-ghost" style="font-size:15px; padding:14px 24px">Try in WhatsApp</a>
+              <span class="soon-tag">Coming soon</span>
+            </div>
+            <span class="hero-caveat">· No download · No wallet setup</span>
+          </div>
+        </div>
+
+        <!-- mascot -->
+        <div class="mascot-col">
+          <!-- orbit arcs -->
+          <svg class="mascot-orbits" viewBox="0 0 480 560" aria-hidden="true">
+            <defs>
+              <linearGradient id="arcG" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%"  stop-color="#00C9B0" stop-opacity="0"/>
+                <stop offset="50%" stop-color="#00C9B0" stop-opacity="0.75"/>
+                <stop offset="100%" stop-color="#00C9B0" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M 30 500 A 310 260 -12 0 1 460 60" fill="none" stroke="url(#arcG)" stroke-width="1.6"/>
+            <path d="M 450 480 A 210 170 6 0 0 50 120" fill="none" stroke="#00C9B0" stroke-opacity="0.18" stroke-width="1" stroke-dasharray="2 7"/>
+            <circle cx="460" cy="60"  r="3" fill="#00C9B0"/>
+            <circle cx="460" cy="60"  r="8" fill="none" stroke="#00C9B0" stroke-opacity="0.35"/>
+            <!-- yellow accent point -->
+            <circle cx="30"  cy="500" r="3" fill="#FDDA24" opacity="0.6"/>
+          </svg>
+
+          <img
+            class="mascot-img"
+            src="assets/mascot.png"
+            alt="StellarClaw — armoured robot with gold claw arms"
+          />
+
+          <!-- stats strip below mascot, no overlay -->
+          <div class="mascot-stats" aria-label="Live network stats">
+            <div class="mstat">
+              <span class="label">Settle</span>
+              <span class="value green">● live</span>
+            </div>
+            <div class="mstat">
+              <span class="label">Chain</span>
+              <span class="value">Stellar</span>
+            </div>
+            <div class="mstat">
+              <span class="label">Time</span>
+              <span class="value yellow">~5s</span>
+            </div>
+            <div class="mstat">
+              <span class="label">Fee</span>
+              <span class="value">&lt;$0.01</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /.hero-grid -->
+
+      <!-- stat strip -->
+      <div class="stat-strip" aria-label="Key metrics">
+        <div class="stat-cell">
+          <div class="n">~<span class="y">5</span>s</div>
+          <div class="l">Stellar settlement time</div>
+        </div>
+        <div class="stat-cell">
+          <div class="n">$<span class="y">0.000001</span></div>
+          <div class="l">Fee per transaction</div>
+        </div>
+        <div class="stat-cell">
+          <div class="n"><span class="y">470K</span>+</div>
+          <div class="l">MoneyGram cash locations</div>
+        </div>
+        <div class="stat-cell">
+          <div class="n"><span class="y">170</span>+</div>
+          <div class="l">Countries with off-ramp</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── TICKER ─────────────────────────────────────── -->
+  <div class="ticker-strip" aria-hidden="true">
+    <div class="ticker-track">
+      <span>◆ <b>STELLAR</b> base fee — 0.00001 XLM per operation</span>
+      <span>◆ <b>SOROBAN</b> WASM smart contracts with policy signers</span>
+      <span>◆ <span class="mint">● LIVE ON TESTNET</span></span>
+      <span>◆ <b>MONEYGRAM</b> off-ramps — 170+ countries · 470,000 locations</span>
+      <span>◆ <b>PYUSD + USDC</b> liquidity on Stellar</span>
+      <span>◆ <span class="yellow">▲ WIREX × ULTRA STELLAR × DORAHACKS</span></span>
+      <span>◆ <b>x402</b> agentic payments — spending policies, not blank cheques</span>
+      <!-- duplicate for seamless scroll -->
+      <span>◆ <b>STELLAR</b> base fee — 0.00001 XLM per operation</span>
+      <span>◆ <b>SOROBAN</b> WASM smart contracts with policy signers</span>
+      <span>◆ <span class="mint">● LIVE ON TESTNET</span></span>
+      <span>◆ <b>MONEYGRAM</b> off-ramps — 170+ countries · 470,000 locations</span>
+      <span>◆ <b>PYUSD + USDC</b> liquidity on Stellar</span>
+      <span>◆ <span class="yellow">▲ WIREX × ULTRA STELLAR × DORAHACKS</span></span>
+      <span>◆ <b>x402</b> agentic payments — spending policies, not blank cheques</span>
+    </div>
+  </div>
+
+  <!-- ── HOW IT WORKS ───────────────────────────────── -->
+  <section id="how" class="section shell" aria-labelledby="how-h2">
+    <div class="section-head">
+      <div class="no">§ 02</div>
+      <div class="head-body">
+        <h2 id="how-h2">Three messages.<br/><span class="dim">No wallet. No keys. No app.</span></h2>
+        <p class="sub">Natural-language intent in, confirmed on-chain transfer out. Under ten seconds.</p>
+      </div>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-col">
+        <div class="step-n">01</div>
+        <div class="step-t">Open the chat</div>
+        <div class="step-d">Tap "Open in Telegram" or add our WhatsApp contact. The claw replies instantly. No install, no seed phrase.</div>
+        <div class="chat">
+          <div class="bub u">hey, you there?</div>
+          <div class="bub b">the claw is out. what are we sending?</div>
+        </div>
+      </div>
+      <div class="how-col">
+        <div class="step-n">02</div>
+        <div class="step-t">Tell it what to do</div>
+        <div class="step-d">"Send Maria $50." "Swap $200 to pesos." "Every Friday, $100 to mom." Plain language, in any messaging app you already use.</div>
+        <div class="chat">
+          <div class="bub u">send maria $50</div>
+          <div class="bub b">confirm — <span class="amt">$50.00 USDC</span> → maria@handle. reply Y.</div>
+        </div>
+      </div>
+      <div class="how-col">
+        <div class="step-n">03</div>
+        <div class="step-t">Signs, settles, done</div>
+        <div class="step-d">You confirm. StellarClaw signs the transaction on Stellar. Money arrives with receipt, tx hash, and settlement time.</div>
+        <div class="chat">
+          <div class="bub u">Y</div>
+          <div class="bub b">
+            sent <span class="amt">$50.00 USDC</span> to maria.
+            <span class="meta">settled 4.8s · fee $0.000001 · tx GBZX…4HQK</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── PROTOCOL STACK ─────────────────────────────── -->
+  <section id="stack" class="section" aria-labelledby="stack-h2">
+    <div class="shell">
+      <div class="section-head">
+        <div class="no">§ 03</div>
+        <div class="head-body">
+          <h2 id="stack-h2">What each claw<br/><span class="y">plugs into.</span></h2>
+          <p class="sub">StellarClaw is not a wallet. It's an agent on top of Stellar's programmable-money stack — six layers, each already shipped or shipping.</p>
+        </div>
+      </div>
+
+      <div class="stack">
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L1</div>
+          <div class="ltt">
+            <div class="title">Stellar + Soroban</div>
+            <div class="sub">Execution layer</div>
+          </div>
+          <div class="ld">WASM smart contracts with SDKs, CLI, RPC server, and a local sandbox. Multi-core scaling and an optimised fee model — the substrate every claw agent executes against. Ledger closes in ~5 seconds.</div>
+          <div class="ltag"><span class="chip">Substrate</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L2</div>
+          <div class="ltt">
+            <div class="title">Soroban → MCP bridge</div>
+            <div class="sub">Agent control · DoraHacks</div>
+          </div>
+          <div class="ld">One CLI turns any Soroban contract into an MCP server. Agents invoke contract functions from natural prompts, with <strong>policy signers</strong> so the agent never holds full account control.</div>
+          <div class="ltag"><span class="chip">Policy signers</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L3</div>
+          <div class="ltt">
+            <div class="title">x402 agentic payments</div>
+            <div class="sub">Settlement + guardrails</div>
+          </div>
+          <div class="ld">Fast, cheap stablecoin settlement. Next: <strong>x402-MCP</strong> — agents discover paid resources and chain API calls under <strong>user-defined spending policies</strong>. Soroban adds programmable limits, approvals, compliance.</div>
+          <div class="ltag"><span class="chip">Spending policies</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L4</div>
+          <div class="ltt">
+            <div class="title">Real-world off-ramps</div>
+            <div class="sub">Fiat surface</div>
+          </div>
+          <div class="ld"><strong>MoneyGram</strong> across 170+ countries and 470,000 cash locations. <strong>Airtm + Bridge</strong> across 150+ countries. Agent-initiated transfers arrive as local currency — no crypto knowledge needed on the receiving end.</div>
+          <div class="ltag"><span class="chip">MoneyGram · Airtm</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L5</div>
+          <div class="ltt">
+            <div class="title">Stablecoin liquidity</div>
+            <div class="sub">Liquidity layer</div>
+          </div>
+          <div class="ld"><strong>PayPal PYUSD</strong> launched on Stellar. <strong>OpenZeppelin</strong> building secure Soroban contract templates. USDC volume on Stellar: ~$500M/month — real liquidity for agents to operate against.</div>
+          <div class="ltag"><span class="chip">PYUSD · USDC · OZ</span></div>
+        </div>
+
+        <div class="layer">
+          <div class="lnum"><span class="dot"></span>L6</div>
+          <div class="ltt">
+            <div class="title">Agent infra momentum</div>
+            <div class="sub">Ecosystem</div>
+          </div>
+          <div class="ld"><strong>Wirex</strong> and <strong>Ultra Stellar</strong> shipping native Stellar payment infra on Soroban — positioned to onboard millions of users and autonomous financial agents alongside StellarClaw.</div>
+          <div class="ltag"><span class="chip">Wirex · Ultra Stellar</span></div>
+        </div>
+
+      </div>
+
+      <p style="margin-top:14px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-muted);">
+        Sources · Stellar.org · DoraHacks · OpenZeppelin · MoneyGram · Nansen
+      </p>
+    </div>
+  </section>
+
+  <!-- ── COMPARE ───────────────────────────────────── -->
+  <section id="compare" class="section shell" aria-labelledby="compare-h2">
+    <div class="section-head">
+      <div class="no">§ 04</div>
+      <div class="head-body">
+        <h2 id="compare-h2">Move <span class="y">$100</span> across a border.</h2>
+        <p class="sub">Here's what it actually costs, and how long it takes. Fees sourced from each provider's published pricing.</p>
+      </div>
+    </div>
+
+    <div class="cmp" role="table" aria-label="Remittance comparison">
+      <div class="cmp-head" role="row">
+        <div>Rail</div>
+        <div>Fee to send $100</div>
+        <div>Time to arrive</div>
+        <div>Surface</div>
+      </div>
+      <div class="cmp-row" role="row">
+        <div class="name">Western Union</div>
+        <div class="cell">~$4.99 online</div>
+        <div class="cell">Minutes–5 days</div>
+        <div class="cell">App / agent</div>
+      </div>
+      <div class="cmp-row" role="row">
+        <div class="name">MoneyGram</div>
+        <div class="cell">~$3.99 online</div>
+        <div class="cell">Minutes–3 days</div>
+        <div class="cell">App / agent</div>
+      </div>
+      <div class="cmp-row" role="row">
+        <div class="name">Bank wire (SWIFT)</div>
+        <div class="cell">$25–$45 + SWIFT</div>
+        <div class="cell">2–5 business days</div>
+        <div class="cell">Bank portal</div>
+      </div>
+      <div class="cmp-row us" role="row">
+        <div class="name">StellarClaw</div>
+        <div class="cell">&lt;$0.01 (Stellar base fee)</div>
+        <div class="cell">~5 seconds</div>
+        <div class="cell">WhatsApp / Telegram</div>
+      </div>
+    </div>
+    <p class="src-note">Western Union online pricing to India/Mexico. MoneyGram.com published rates. SWIFT average via World Bank. Stellar: 0.00001 XLM at $0.10/XLM.</p>
+  </section>
+
+  <!-- ── WAITLIST ──────────────────────────────────── -->
+  <section id="waitlist" class="banner" aria-labelledby="banner-h3">
+    <div class="shell">
+      <h3 id="banner-h3">Join the waitlist.<br/><span class="y">Be first in line.</span></h3>
+      <div class="banner-row">
+        <p class="banner-sub">We will ping you the moment your corridor goes live. No wallet needed.</p>
+        <div class="banner-ctas">
+          <button
+            class="btn-yellow"
+            style="font-size:15px;padding:15px 32px"
+            id="wl-cta-btn"
+            aria-label="Join the StellarClaw waitlist"
+          >Secure my spot →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────── -->
+  <footer class="foot" aria-label="Site footer">
+    <div class="shell">
+      <div class="foot-grid">
+
+        <div>
+          <div class="foot-brand">
+            <img src="assets/logo-mark.png" alt="" aria-hidden="true" width="28" height="26" style="display:block;flex-shrink:0;object-fit:contain">
+            <div class="foot-name"><span class="y">Stellar</span>Claw</div>
+          </div>
+          <div class="foot-blurb">An AI payments agent on Stellar. For people who send money home.</div>
+        </div>
+
+        <div class="foot-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#">Telegram bot</a></li>
+            <li><a href="#">WhatsApp bot</a></li>
+            <li><a href="#">Recurring transfers</a></li>
+            <li><a href="#">Agents API</a></li>
+          </ul>
+        </div>
+
+        <div class="foot-col">
+          <h4>Protocol</h4>
+          <ul>
+            <li><a href="#">Soroban</a></li>
+            <li><a href="#">MCP bridge</a></li>
+            <li><a href="#">x402 payments</a></li>
+            <li><a href="#">Policy signers</a></li>
+          </ul>
+        </div>
+
+        <div class="foot-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press kit</a></li>
+            <li><a href="mailto:hello@stellarclaw.xyz">hello@stellarclaw.xyz</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="foot-bottom">
+        <div>© StellarClaw Labs · Settling on Stellar</div>
+        <div>The Dispatch · Testnet</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll for in-page anchors
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href').slice(1);
+        const el = id && document.getElementById(id);
+        if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    // Waitlist CTA — fires Formbricks "Join Waitlist" action
+    // The "StellarClaw Waitlist" survey must be configured in Formbricks
+    // to trigger on this action (Configuration → Add action → "Join Waitlist")
+    var wlBtn = document.getElementById('wl-cta-btn');
+    if (wlBtn) {
+      wlBtn.addEventListener('click', function() {
+        if (window.formbricks) {
+          window.formbricks.track('Join Waitlist');
+        }
+      });
+    }
+  </script>
+</body>
+</html>
