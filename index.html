@@ -261,7 +261,7 @@
 
     .layer {
       display: grid;
-      grid-template-columns: 80px 240px 1fr 180px;
+      grid-template-columns: 80px 240px 1fr 200px;
       border-top: 1px solid rgba(255,255,255,0.07);
       background: #0D0E11;
       transition: background 200ms var(--ease-out);
@@ -294,10 +294,14 @@
     }
     .layer .ld strong { color: var(--sc-bone); font-weight: 600; }
     .layer .ltag {
-      padding: 28px 20px; display: flex; align-items: center; justify-content: flex-end;
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-3);
+      padding: 20px 24px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--fg-3);
     }
-    .chip { padding: 4px 11px; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px; color: var(--sc-bone); white-space: nowrap; font-size: 10px; }
+    .chip {
+      padding: 5px 12px; border: 1px solid rgba(255,255,255,0.14); border-radius: 999px;
+      color: var(--sc-bone); font-size: 10px; letter-spacing: 0.12em;
+      text-align: center; line-height: 1.4; word-break: break-word;
+    }
 
     /* ── compare table ───────────────────────────────── */
     .cmp { border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; overflow: hidden; }
