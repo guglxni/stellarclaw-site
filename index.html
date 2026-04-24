@@ -398,6 +398,37 @@
       font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
       text-transform: uppercase; color: var(--fg-muted);
     }
+
+    /* ── ecosystem acknowledgment strip ─────────────── */
+    .foot-eco {
+      display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+      padding: 20px 0 0; margin-top: 40px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .eco-label {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--fg-muted); flex-shrink: 0;
+    }
+    .eco-stellar {
+      display: inline-flex; align-items: center; gap: 7px;
+      opacity: 0.55; transition: opacity 150ms; flex-shrink: 0;
+    }
+    .eco-stellar:hover { opacity: 0.9; }
+    .eco-stellar-mark { display: block; flex-shrink: 0; }
+    .eco-stellar-name {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--fg-2);
+    }
+    .eco-sep { color: var(--fg-muted); font-size: 11px; flex-shrink: 0; }
+    .eco-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .eco-pill {
+      font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--fg-muted);
+      padding: 3px 9px; border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 999px; white-space: nowrap;
+      transition: color 120ms, border-color 120ms;
+    }
+    a.eco-pill:hover { color: var(--fg-2); border-color: rgba(255,255,255,0.16); }
   </style>
 </head>
 <body class="sc-base">
@@ -675,7 +706,12 @@
       </div>
 
       <p style="margin-top:14px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--fg-muted);">
-        Sources · Stellar.org · DoraHacks · OpenZeppelin · MoneyGram · Nansen
+        Sources ·
+        <a href="https://stellar.org" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid rgba(255,255,255,0.12)">Stellar.org</a> ·
+        <a href="https://dorahacks.io" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid rgba(255,255,255,0.12)">DoraHacks</a> ·
+        <a href="https://openzeppelin.com" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid rgba(255,255,255,0.12)">OpenZeppelin</a> ·
+        <a href="https://moneygram.com" target="_blank" rel="noopener" style="color:inherit; border-bottom:1px solid rgba(255,255,255,0.12)">MoneyGram</a> ·
+        Nansen
       </p>
     </div>
   </section>
@@ -806,6 +842,25 @@
           </ul>
         </div>
 
+      </div>
+
+      <!-- Ecosystem acknowledgment -->
+      <div class="foot-eco">
+        <span class="eco-label">Built on</span>
+        <a class="eco-stellar" href="https://stellar.org" target="_blank" rel="noopener noreferrer" aria-label="Stellar blockchain">
+          <img src="assets/stellar-mark.svg" alt="" aria-hidden="true" class="eco-stellar-mark" width="22" height="19">
+          <span class="eco-stellar-name">Stellar</span>
+        </a>
+        <span class="eco-sep">·</span>
+        <div class="eco-pills">
+          <a class="eco-pill" href="https://stellar.org/soroban" target="_blank" rel="noopener">Soroban</a>
+          <a class="eco-pill" href="https://dorahacks.io" target="_blank" rel="noopener">DoraHacks</a>
+          <span class="eco-pill">x402</span>
+          <a class="eco-pill" href="https://moneygram.com" target="_blank" rel="noopener">MoneyGram</a>
+          <a class="eco-pill" href="https://openzeppelin.com" target="_blank" rel="noopener">OpenZeppelin</a>
+          <span class="eco-pill">PYUSD</span>
+          <a class="eco-pill" href="https://wirexapp.com" target="_blank" rel="noopener">Wirex</a>
+        </div>
       </div>
 
       <div class="foot-bottom">
