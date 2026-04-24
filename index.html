@@ -6,17 +6,20 @@
   <title>StellarClaw — Send money like a text.</title>
   <meta name="description" content="StellarClaw is an AI payments agent in WhatsApp and Telegram. Chat to send USDC anywhere on Stellar. Settles in 5 seconds for less than a cent.">
   <link rel="stylesheet" href="colors_and_type.css">
-  <!-- Formbricks SDK — loaded as ES module, exposed globally -->
+  <!-- Formbricks SDK -->
   <script type="module">
     try {
-      const { default: formbricks } = await import('https://esm.sh/@formbricks/js');
-      await formbricks.init({
+      const mod = await import('https://esm.sh/@formbricks/js');
+      const fb = mod.default ?? mod;
+      await fb.init({
         environmentId: "cmoc1ekddaoi5ue01055npjcf",
-        apiHost: "https://app.formbricks.com"
+        apiHost: "https://app.formbricks.com",
       });
-      window.formbricks = formbricks;
+      window.formbricks = fb;
       window.dispatchEvent(new Event('formbricks-ready'));
-    } catch(e) { console.warn('Formbricks SDK failed to load', e); }
+    } catch (e) {
+      console.warn('[Formbricks] SDK init failed:', e);
+    }
   </script>
   <style>
     /* ── reset ─────────────────────────────────────── */
