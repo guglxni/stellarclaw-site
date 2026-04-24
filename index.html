@@ -349,13 +349,32 @@
     .banner-sub { font-family: var(--font-accent); font-style: italic; font-size: 19px; color: var(--fg-2); max-width: 380px; line-height: 1.5; }
     .banner-ctas { display: flex; gap: 14px; align-items: flex-start; flex-wrap: wrap; }
 
-    /* ── waitlist CTA ────────────────────────────────── */
-    .waitlist-hint {
-      display: flex; align-items: center; gap: 10px; margin-top: 6px;
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em;
-      text-transform: uppercase; color: var(--fg-muted);
+    /* ── waitlist form ───────────────────────────────── */
+    .waitlist-form { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 400px; }
+    .wl-fields { display: flex; flex-direction: column; gap: 10px; }
+    .wl-field { display: flex; flex-direction: column; gap: 6px; }
+    .wl-field label {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.20em;
+      text-transform: uppercase; color: var(--fg-3);
     }
-    .waitlist-hint .bar { width: 18px; height: 1px; background: var(--fg-muted); flex-shrink: 0; }
+    .wl-field label .req { color: var(--sc-yellow); }
+    .wl-field label .opt { color: var(--fg-muted); font-size: 9px; text-transform: none; letter-spacing: 0; }
+    .wl-field input {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px; padding: 14px 16px; width: 100%;
+      font-family: var(--font-ui); font-size: 15px; color: var(--sc-bone);
+      outline: none; transition: border-color 120ms, background 120ms;
+    }
+    .wl-field input::placeholder { color: var(--fg-muted); }
+    .wl-field input:focus { border-color: var(--sc-yellow); background: rgba(253,218,36,0.04); }
+    .wl-field input:disabled { opacity: 0.45; cursor: not-allowed; }
+    .wl-field input.err { border-color: #FF6B6B; }
+    .wl-success {
+      display: none; padding: 14px 16px;
+      background: rgba(0,201,176,0.08); border: 1px solid rgba(0,201,176,0.22); border-radius: 10px;
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--sc-mint);
+    }
 
     /* ── footer ──────────────────────────────────────── */
     .foot { padding: 80px 0 52px; border-top: 1px solid rgba(255,255,255,0.10); }
@@ -711,18 +730,34 @@
     <div class="shell">
       <h3 id="banner-h3">Join the waitlist.<br/><span class="y">Be first in line.</span></h3>
       <div class="banner-row">
-        <p class="banner-sub">We will ping you the moment your corridor goes live. No wallet needed.</p>
+        <p class="banner-sub">Be among the first when we go live. No wallet or downloads needed.</p>
 
-        <div>
-          <button
-            id="wl-cta-btn"
-            class="btn-yellow"
-            style="font-size:15px;padding:15px 32px"
-          >Secure my spot →</button>
-          <p class="waitlist-hint" aria-hidden="true">
-            <span class="bar"></span>Email + phone · No wallet · 30 sec
+        <form class="waitlist-form" id="wl-form" novalidate>
+          <div class="wl-fields">
+            <div class="wl-field">
+              <label for="wl-name">Full name <span class="req">*</span></label>
+              <input type="text" id="wl-name" name="name" required
+                placeholder="Your name" autocomplete="name">
+            </div>
+            <div class="wl-field">
+              <label for="wl-email">Email <span class="req">*</span></label>
+              <input type="email" id="wl-email" name="email" required
+                placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="wl-field">
+              <label for="wl-phone">Mobile <span class="opt">(optional)</span></label>
+              <input type="tel" id="wl-phone" name="phone"
+                placeholder="+1 555 000 0000" autocomplete="tel">
+            </div>
+          </div>
+          <button type="submit" id="wl-submit" class="btn-yellow"
+            style="font-size:15px;padding:15px 32px;align-self:flex-start">
+            Secure my spot →
+          </button>
+          <p class="wl-success" id="wl-success" role="status">
+            ✓ You're on the list — we'll be in touch.
           </p>
-        </div>
+        </form>
 
       </div>
     </div>
@@ -790,18 +825,53 @@
       });
     });
 
-    // Waitlist CTA — triggers the Formbricks "waitlist_signup" survey popup
-    var wlBtn = document.getElementById('wl-cta-btn');
-    if (wlBtn) {
-      wlBtn.addEventListener('click', function() {
-        if (window.formbricks) {
-          window.formbricks.track('waitlist_signup');
-        } else {
-          // SDK still loading — wait then retry once
-          window.addEventListener('formbricks-ready', function() {
-            window.formbricks.track('waitlist_signup');
-          }, { once: true });
+    // Waitlist form — always works; pushes contact to Formbricks in background
+    var wlForm = document.getElementById('wl-form');
+    if (wlForm) {
+      wlForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        var nameEl  = document.getElementById('wl-name');
+        var emailEl = document.getElementById('wl-email');
+        var phoneEl = document.getElementById('wl-phone');
+        var btn     = document.getElementById('wl-submit');
+        var success = document.getElementById('wl-success');
+
+        var name  = nameEl.value.trim();
+        var email = emailEl.value.trim();
+        var phone = phoneEl.value.trim();
+
+        // Validate
+        var ok = true;
+        [nameEl, emailEl].forEach(function(el) { el.classList.remove('err'); });
+        if (!name)  { nameEl.classList.add('err');  nameEl.focus();  ok = false; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          emailEl.classList.add('err');
+          if (ok) { emailEl.focus(); ok = false; }
         }
+        if (!ok) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Sending…';
+
+        // Push to Formbricks (contact capture — no popup, just data storage)
+        try {
+          if (!window.formbricks) {
+            await new Promise(function(r) {
+              window.addEventListener('formbricks-ready', r, { once: true });
+              setTimeout(r, 3000);
+            });
+          }
+          if (window.formbricks) {
+            window.formbricks.setEmail(email);
+            window.formbricks.setAttribute('name', name);
+            if (phone) window.formbricks.setAttribute('phone', phone);
+          }
+        } catch (err) { console.warn('[Formbricks]', err); }
+
+        // Always show success regardless of SDK state
+        wlForm.querySelectorAll('input').forEach(function(i) { i.disabled = true; });
+        btn.style.display = 'none';
+        success.style.display = 'block';
       });
     }
   </script>
